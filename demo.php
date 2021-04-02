@@ -66,7 +66,6 @@ $proxy = new SubscriberProxy(
     ['defaultEvent' => 'handleDefaultEvent'],
     new DefaultListener()
 );
-$event = null;
 
 for ($i = 0; $i < 10; $i++) {
     printf("$i\n");
