@@ -7,13 +7,6 @@ use Closure;
 
 class DefaultListener
 {
-    public static function getSubscribedEvents()
-    {
-        return [
-            'defaultEvent' => 'handleDefaultEvent'
-        ];
-    }
-
     public function handleDefaultEvent($event)
     {
     }
@@ -67,7 +60,10 @@ class SubscriberProxy
 
 printf("php %s\n", PHP_VERSION);
 
-$proxy = new SubscriberProxy(DefaultListener::getSubscribedEvents(), new DefaultListener());
+$proxy = new SubscriberProxy(
+    ['defaultEvent' => 'handleDefaultEvent'],
+    new DefaultListener()
+);
 $event = null;
 
 for ($i = 0; $i < 10; $i++) {
