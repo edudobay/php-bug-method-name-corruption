@@ -32,7 +32,7 @@ class SubscriberProxy
         return call_user_func_array([$this->subscriber, $name], $arguments);
     }
 
-    public function register(EventDispatcher $dispatcher)
+    public function register($dispatcher)
     {
         foreach ($this->subscribedEvents as $eventName => $params) {
             error_log(

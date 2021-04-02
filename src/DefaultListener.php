@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
 class DefaultListener implements EventSubscriberInterface
 {
@@ -15,7 +14,7 @@ class DefaultListener implements EventSubscriberInterface
         ];
     }
 
-    public function handleDefaultEvent(Event $event)
+    public function handleDefaultEvent($event)
     {
     }
 }
