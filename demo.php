@@ -2,20 +2,18 @@
 declare(strict_types=1);
 
 use App\DefaultListener;
-use App\LazySubscriberProxy;
+use App\SubscriberProxy;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
 use Symfony\Contracts\EventDispatcher\Event;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+printf("php %s\n", PHP_VERSION);
+
 $dispatcher = new SymfonyEventDispatcher();
 
-$events = call_user_func([DefaultListener::class, 'getSubscribedEvents']);
-LazySubscriberProxy::addLazySubscriber($dispatcher, $events, function () {
-    return new DefaultListener();
-});
-
-printf("php %s\n", PHP_VERSION);
+$events = DefaultListener::getSubscribedEvents();
+(new SubscriberProxy($events, new DefaultListener()))->register($dispatcher);
 
 $event = new Event();
 

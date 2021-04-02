@@ -7,33 +7,15 @@ use Closure;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class LazySubscriberProxy
+class SubscriberProxy
 {
-    private $factory;
     private array $subscribedEvents;
-    private ?EventSubscriberInterface $subscriber = null;
+    private EventSubscriberInterface $subscriber;
 
-    public static function addLazySubscriber(
-        EventDispatcher $eventDispatcher,
-        array $subscribedEvents,
-        callable $factory
-    ) {
-        $proxy = new self($subscribedEvents, $factory);
-        $proxy->register($eventDispatcher);
-    }
-
-    public function __construct(array $subscribedEvents, callable $factory)
+    public function __construct(array $subscribedEvents, EventSubscriberInterface $subscriber)
     {
         $this->subscribedEvents = $subscribedEvents;
-        $this->factory = $factory;
-    }
-
-    private function subscriber()
-    {
-        if (is_null($this->subscriber)) {
-            $this->subscriber = call_user_func($this->factory);
-        }
-        return $this->subscriber;
+        $this->subscriber = $subscriber;
     }
 
     public function __call(string $name, array $arguments)
@@ -43,7 +25,7 @@ class LazySubscriberProxy
                 $this
             ) . '/' . spl_object_hash($this)
         );
-        return call_user_func_array([$this->subscriber(), $name], $arguments);
+        return call_user_func_array([$this->subscriber, $name], $arguments);
     }
 
     public function register(EventDispatcher $dispatcher)
