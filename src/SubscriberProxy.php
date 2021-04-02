@@ -30,13 +30,16 @@ class SubscriberProxy
     public function __call(string $name, array $arguments)
     {
         error_log("Lazy subscriber called; method (string; length=" . strlen($name) . ")");
-        if (strlen($name) < 1000) {
-            error_log(
-                "Lazy subscriber called; method $name; this is " . spl_object_id(
-                    $this
-                ) . '/' . spl_object_hash($this)
-            );
-        }
+
+        // WEIRD BEHAVIOR: When the previous line runs and strlen($name) happens to be ridiculously
+        // large (like 140 billion characters), it seems that an implicit '$name = strlen($name)'
+        // command runs after it. The value of $name seems changed for the remaining of this method.
+
+        error_log(
+            "Lazy subscriber called; method $name; this is " . spl_object_id(
+                $this
+            ) . '/' . spl_object_hash($this)
+        );
 
         // NOT BROKEN: if call_user_func_array is used as a qualified name (with `use function ...` or a leading `\`)
         // NOT BROKEN: if the modern call format is used: $this->subscriber->$name(...$arguments)
