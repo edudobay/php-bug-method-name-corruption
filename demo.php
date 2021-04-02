@@ -24,7 +24,7 @@ class SubscriberProxy
         $this->subscriber = $subscriber;
 
         foreach ($this->subscribedEvents as $eventName => $params) {
-            // NOT BROKEN: If $methodName is given as an argument to this method
+            // DOESN'T BREAK IF: $methodName is given as an argument to this method
             $methodName = $params;
             $this->listener = Closure::fromCallable([$this, $methodName]);
             break; // Only register the first listener!
@@ -45,16 +45,18 @@ class SubscriberProxy
             ) . '/' . spl_object_hash($this)
         );
 
-        // NOT BROKEN: if call_user_func_array is used as a qualified name (with `use function ...` or a leading `\`)
-        // NOT BROKEN: if the modern call format is used: $this->subscriber->$name(...$arguments)
-        // NOT BROKEN: call_user_func([$this->subscriber, $name], ...$arguments)
-        // BROKEN:
+        // DOESN'T BREAK IF: call_user_func_array is used as a qualified name (with `use function ...` or a leading `\`)
+        // DOESN'T BREAK IF: the modern call format is used: $this->subscriber->$name(...$arguments)
+        // DOESN'T BREAK IF: replaced with call_user_func([$this->subscriber, $name], ...$arguments)
         return call_user_func_array([$this->subscriber, $name], $arguments);
     }
 
     public function dispatch($event, string $eventName)
     {
-        ($this->listener)($event, $eventName, $this);
+        // DOESN'T BREAK IF: more than 3 arguments
+        // DOESN'T BREAK IF: less than 3 arguments
+        // (The 3rd argument can be anything, apparently)
+        ($this->listener)($event, $eventName, null);
     }
 }
 
