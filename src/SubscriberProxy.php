@@ -9,22 +9,12 @@ class SubscriberProxy
 {
     private array $subscribedEvents;
     private object $subscriber;
-    private array $listeners = [];
+    private Closure $listener;
 
     public function __construct(array $subscribedEvents, object $subscriber)
     {
         $this->subscribedEvents = $subscribedEvents;
         $this->subscriber = $subscriber;
-    }
-
-    public function getListeners(string $eventName)
-    {
-        return $this->listeners[$eventName];
-    }
-
-    public function addListener(string $eventName, $listener)
-    {
-        $this->listeners[$eventName][] = $listener;
     }
 
     public function __call(string $name, array $arguments)
@@ -51,20 +41,15 @@ class SubscriberProxy
     public function register()
     {
         foreach ($this->subscribedEvents as $eventName => $params) {
-            error_log(
-                "Registering lazy event subscriber: $eventName => " . var_export($params, true)
-            );
-
+            // NOT BROKEN: If $methodName is given as an argument to this method
             $methodName = $params;
-            $this->addListener($eventName, Closure::fromCallable([$this, $methodName]));
+            $this->listener = Closure::fromCallable([$this, $methodName]);
+            break; // Only register the first listener!
         }
     }
 
     public function dispatch($event, string $eventName)
     {
-        foreach ($this->getListeners($eventName) as $listener) {
-            // Passing this third argument is important, no matter what it is
-            $listener($event, 'defaultEvent', $this);
-        }
+        ($this->listener)($event, $eventName, $this);
     }
 }
