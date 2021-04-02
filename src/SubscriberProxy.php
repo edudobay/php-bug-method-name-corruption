@@ -9,11 +9,22 @@ class SubscriberProxy
 {
     private array $subscribedEvents;
     private $subscriber;
+    private $listeners = [];
 
     public function __construct(array $subscribedEvents, $subscriber)
     {
         $this->subscribedEvents = $subscribedEvents;
         $this->subscriber = $subscriber;
+    }
+
+    public function getListeners(string $eventName)
+    {
+        return $this->listeners[$eventName];
+    }
+
+    public function addListener(string $eventName, $listener)
+    {
+        $this->listeners[$eventName][] = $listener;
     }
 
     public function __call(string $name, array $arguments)
@@ -33,7 +44,7 @@ class SubscriberProxy
         return call_user_func_array([$this->subscriber, $name], $arguments);
     }
 
-    public function register($dispatcher)
+    public function register()
     {
         foreach ($this->subscribedEvents as $eventName => $params) {
             error_log(
@@ -41,7 +52,15 @@ class SubscriberProxy
             );
 
             $methodName = $params;
-            $dispatcher->addListener($eventName, Closure::fromCallable([$this, $methodName]));
+            $this->addListener($eventName, Closure::fromCallable([$this, $methodName]));
+        }
+    }
+
+    public function dispatch($event, string $eventName)
+    {
+        foreach ($this->getListeners($eventName) as $listener) {
+            // Passing this third argument is important, no matter what it is
+            $listener($event, 'defaultEvent', $this);
         }
     }
 }
