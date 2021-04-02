@@ -40,6 +40,7 @@ class SubscriberProxy
 
         // NOT BROKEN: if call_user_func_array is used as a qualified name (with `use function ...` or a leading `\`)
         // NOT BROKEN: if the modern call format is used: $this->subscriber->$name(...$arguments)
+        // NOT BROKEN: call_user_func([$this->subscriber, $name], ...$arguments)
         // BROKEN:
         return call_user_func_array([$this->subscriber, $name], $arguments);
     }
