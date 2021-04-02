@@ -4,15 +4,13 @@ declare(strict_types=1);
 namespace App;
 
 use Closure;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SubscriberProxy
 {
     private array $subscribedEvents;
-    private EventSubscriberInterface $subscriber;
+    private $subscriber;
 
-    public function __construct(array $subscribedEvents, EventSubscriberInterface $subscriber)
+    public function __construct(array $subscribedEvents, $subscriber)
     {
         $this->subscribedEvents = $subscribedEvents;
         $this->subscriber = $subscriber;

@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-class DefaultListener implements EventSubscriberInterface
+class DefaultListener
 {
     public static function getSubscribedEvents()
     {

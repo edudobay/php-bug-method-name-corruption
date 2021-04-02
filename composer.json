@@ -2,7 +2,6 @@
   "name": "edudobay/bug-demo-event-dispatcher",
   "description": "",
   "require": {
-    "symfony/event-dispatcher": "^5.2",
     "php": "^7.4 || ^8.0"
   },
   "autoload": {
