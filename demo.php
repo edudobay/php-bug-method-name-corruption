@@ -33,13 +33,15 @@ class SubscriberProxy
 
     public function __call(string $name, array $arguments)
     {
-        error_log("Lazy subscriber called; method (string; length=" . strlen($name) . ")");
+        error_log("__call name=(length=" . strlen($name) . ")");
 
         // WEIRD BEHAVIOR: When the previous line runs and strlen($name) happens to be ridiculously
         // large (like 140 billion characters), it seems that an implicit '$name = strlen($name)'
         // command runs after it. The value of $name seems changed for the remaining of this method.
+        // WEIRD BEHAVIOR: Changing the string above (the static parts) might
+        // change the program behavior. Current version breaks even in PHP 8.
 
-        error_log("Lazy subscriber called; method $name");
+        error_log("__call name=$name");
 
         // DOESN'T BREAK IF: call_user_func_array is used as a qualified name (with `use function ...` or a leading `\`)
         // DOESN'T BREAK IF: the modern call format is used: $this->subscriber->$name(...$arguments)
@@ -55,8 +57,6 @@ class SubscriberProxy
         ($this->listener)($event, $eventName, null);
     }
 }
-
-printf("php %s\n", PHP_VERSION);
 
 $proxy = new SubscriberProxy(
     ['defaultEvent' => 'handleDefaultEvent'],
