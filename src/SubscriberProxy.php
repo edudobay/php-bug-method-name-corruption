@@ -15,6 +15,13 @@ class SubscriberProxy
     {
         $this->subscribedEvents = $subscribedEvents;
         $this->subscriber = $subscriber;
+
+        foreach ($this->subscribedEvents as $eventName => $params) {
+            // NOT BROKEN: If $methodName is given as an argument to this method
+            $methodName = $params;
+            $this->listener = Closure::fromCallable([$this, $methodName]);
+            break; // Only register the first listener!
+        }
     }
 
     public function __call(string $name, array $arguments)
@@ -36,16 +43,6 @@ class SubscriberProxy
         // NOT BROKEN: call_user_func([$this->subscriber, $name], ...$arguments)
         // BROKEN:
         return call_user_func_array([$this->subscriber, $name], $arguments);
-    }
-
-    public function register()
-    {
-        foreach ($this->subscribedEvents as $eventName => $params) {
-            // NOT BROKEN: If $methodName is given as an argument to this method
-            $methodName = $params;
-            $this->listener = Closure::fromCallable([$this, $methodName]);
-            break; // Only register the first listener!
-        }
     }
 
     public function dispatch($event, string $eventName)
