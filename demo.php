@@ -39,11 +39,7 @@ class SubscriberProxy
         // large (like 140 billion characters), it seems that an implicit '$name = strlen($name)'
         // command runs after it. The value of $name seems changed for the remaining of this method.
 
-        error_log(
-            "Lazy subscriber called; method $name; this is " . spl_object_id(
-                $this
-            ) . '/' . spl_object_hash($this)
-        );
+        error_log("Lazy subscriber called; method $name");
 
         // DOESN'T BREAK IF: call_user_func_array is used as a qualified name (with `use function ...` or a leading `\`)
         // DOESN'T BREAK IF: the modern call format is used: $this->subscriber->$name(...$arguments)
