@@ -8,10 +8,10 @@ use Closure;
 class SubscriberProxy
 {
     private array $subscribedEvents;
-    private $subscriber;
-    private $listeners = [];
+    private object $subscriber;
+    private array $listeners = [];
 
-    public function __construct(array $subscribedEvents, $subscriber)
+    public function __construct(array $subscribedEvents, object $subscriber)
     {
         $this->subscribedEvents = $subscribedEvents;
         $this->subscriber = $subscriber;
